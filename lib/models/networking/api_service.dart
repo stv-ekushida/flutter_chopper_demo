@@ -42,5 +42,4 @@ abstract class ApiService extends ChopperService{
       @Query('category') String category,
       @Query('apiKey') String apiKey = ApiService.API_KEY,
     });
-
 }

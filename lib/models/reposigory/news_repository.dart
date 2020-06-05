@@ -3,8 +3,8 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
-import 'package:flutter_chopper_demo/model/networking/api_service.dart';
-import 'package:flutter_chopper_demo/model/news_model.dart';
+import 'package:flutter_chopper_demo/models/networking/api_service.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
 
 class NewsRepository {
 

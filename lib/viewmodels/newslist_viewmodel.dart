@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
-import 'package:flutter_chopper_demo/model/news_model.dart';
-import 'package:flutter_chopper_demo/model/reposigory/news_repository.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
+import 'package:flutter_chopper_demo/models/reposigory/news_repository.dart';
 
 class NewsListViewModel extends ChangeNotifier {
 
