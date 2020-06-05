@@ -1,17 +1,25 @@
 # flutter_chopper_demo
 
-A new Flutter project.
+## pubspec.yaml
 
-## Getting Started
+```
+dependencies:
+  flutter:
+    sdk: flutter
 
-This project is a starting point for a Flutter application.
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.2
+  chopper: ^2.0.0
+  json_annotation: ^3.0.1
+  provider: ^4.0.4
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# flutter_chopper_demo
+  build_runner: ^1.0.0
+  chopper_generator: ^2.0.0
+  json_serializable: ^3.3.0
+```
