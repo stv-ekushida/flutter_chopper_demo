@@ -36,7 +36,6 @@ part 'api_service.chopper.dart';
 @ChopperApi()
 abstract class ApiService extends ChopperService{
 
-  //追加<S>
   @Get(path: '/top-headlines')
   Future<Response> getHeadLine({
     @Query('country') String country = "jp",
@@ -59,7 +58,6 @@ abstract class ApiService extends ChopperService{
       @Query('category') String category,
       @Query('apiKey') String apiKey = ApiService.API_KEY,
     });
-    //追加<E>
 }
 ```
 ### ③flutterコマンドでコード生成
