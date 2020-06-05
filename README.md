@@ -9,13 +9,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
   chopper: ^2.0.0
   json_annotation: ^3.0.1
-  provider: ^4.0.4
-
 
 dev_dependencies:
   flutter_test:
@@ -209,8 +204,134 @@ class NewsRepository {
 }
 ```
 
+## Providerの導入
 
+### ①パッケージの追加
 
+```
+dependencies:
+  flutter:
+    sdk: flutter
 
+  provider: ^4.0.4
+```
 
+### ② ChangeNotifierの継承したクラスの生成
 
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/data/searchtype.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
+import 'package:flutter_chopper_demo/models/reposigory/news_repository.dart';
+
+class NewsListViewModel extends ChangeNotifier {
+
+  final NewsRepository _repository = NewsRepository();
+
+  SearchType _searchType = SearchType.CATEGORY;
+  SearchType get searchType => _searchType;
+
+  String _keyword = "";
+  String get keyword => _keyword;
+
+  String _category = "technology";
+  String get category => _category;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  List<Article> _artcles = List();
+  List<Article> get articles => _artcles;
+
+  Future<void> getNews({
+    @required SearchType searchType, String keyword, String category
+  }) async {}
+
+  @override
+  void dispose() {
+    super.dispose();
+    _repository.dispose();
+  }
+}
+```
+
+### ③ notifyListenersで変更を通知
+
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/data/searchtype.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
+import 'package:flutter_chopper_demo/models/reposigory/news_repository.dart';
+
+class NewsListViewModel extends ChangeNotifier {
+
+  final NewsRepository _repository = NewsRepository();
+
+  SearchType _searchType = SearchType.CATEGORY;
+  SearchType get searchType => _searchType;
+
+  String _keyword = "";
+  String get keyword => _keyword;
+
+  String _category = "technology";
+  String get category => _category;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  List<Article> _artcles = List();
+  List<Article> get articles => _artcles;
+
+  Future<void> getNews({
+    @required SearchType searchType, String keyword, String category
+  }) async {
+    _searchType = searchType;    
+    _keyword = keyword;
+    _category = category;
+
+    _isLoading = true;
+    notifyListeners();
+
+    _artcles = await _repository.getNews(serchType: _searchType, keyword: _keyword, category: _category);
+
+    for(Article a in _artcles) {
+     print(a.title);
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _repository.dispose();
+  }
+}
+```
+
+### ④ アプリのルートに、ChangeNotifierProviderを追加
+
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/viewmodels/newslist_viewmodel.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<NewsListViewModel>(create: (context) => NewsListViewModel()),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+```
+
+### ⑤ ChangeNotifierの継承したクラスのメソッドを操作
+
+```
+      final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
+      viewModel.getNews(searchType: SearchType.HEAD_LINE, );
+ ```
