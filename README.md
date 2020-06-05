@@ -169,7 +169,13 @@ class Article {
 }
 ```
 
-### ⑧レスポンス処理の追加
+### ⑧flutterコマンドでコード生成
+
+```
+flutter packages pub run build_runner build
+```
+
+### ⑨レスポンス処理の追加
 
 ```
 
