@@ -26,24 +26,7 @@ dev_dependencies:
   json_serializable: ^3.3.0
 ```
 
-### ②コード生成用のファイルの作成
-
-```
-part 'api_service.chopper.dart';
-```
-
-### ③API Serviceの抽象クラスの作成
-
-```
-import 'package:chopper/chopper.dart';
-
-part 'api_service.chopper.dart';
-
-@ChopperApi()
-abstract class ApiService extends ChopperService{}
-```
-
-### ④リクエストメソッドの生成 (GET/POSTなど）
+### ②API Serviceの抽象クラスの作成
 
 ```
 import 'package:chopper/chopper.dart';
@@ -79,13 +62,13 @@ abstract class ApiService extends ChopperService{
     //追加<E>
 }
 ```
-### ⑤flutterコマンドでコード生成
+### ③flutterコマンドでコード生成
 
 ```
 flutter packages pub run build_runner build
 ```
 
-### ⑥ファクトリメソッドの追加
+### ④ファクトリメソッドの追加
 
 ```
 import 'package:chopper/chopper.dart';
@@ -136,7 +119,7 @@ abstract class ApiService extends ChopperService{
 }
 ```
 
-### ⑦レスポンス用のクラスの設定
+### ⑤レスポンス用のクラスの設定
 
 ```
 import 'package:json_annotation/json_annotation.dart';
@@ -169,17 +152,15 @@ class Article {
 }
 ```
 
-### ⑧flutterコマンドでコード生成
+### ⑥flutterコマンドでコード生成
 
 ```
 flutter packages pub run build_runner build
 ```
 
-### ⑨レスポンス処理の追加
+### ⑦レスポンス処理の追加
 
 ```
-
-
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
