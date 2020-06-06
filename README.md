@@ -1,6 +1,6 @@
 # flutter_chopper_demo
 
-## Chopperの導入方法
+## 1. APIクライアント(Chopper)の導入方法
 
 ### ①パッケージの追加
 
@@ -233,7 +233,7 @@ class NewsRepository {
 }
 ```
 
-## Providerの導入
+## 2. 状態管理(Providerの導入)
 
 ### ①パッケージの追加
 
@@ -365,7 +365,7 @@ void main() {
       viewModel.getNews(searchType: SearchType.HEAD_LINE, );
  ```
 
-## 画面に表示させる
+## 3. 画面に表示させる
 
 ### ① ViewModel経由でAPIを呼ぶ
 
