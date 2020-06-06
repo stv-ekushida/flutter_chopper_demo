@@ -9,13 +9,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
   chopper: ^2.0.0
   json_annotation: ^3.0.1
-  provider: ^4.0.4
-
 
 dev_dependencies:
   flutter_test:
@@ -26,24 +21,7 @@ dev_dependencies:
   json_serializable: ^3.3.0
 ```
 
-### ②コード生成用のファイルの作成
-
-```
-part 'api_service.chopper.dart';
-```
-
-### ③API Serviceの抽象クラスの作成
-
-```
-import 'package:chopper/chopper.dart';
-
-part 'api_service.chopper.dart';
-
-@ChopperApi()
-abstract class ApiService extends ChopperService{}
-```
-
-### ④リクエストメソッドの生成 (GET/POSTなど）
+### ②API Serviceの抽象クラスの作成
 
 ```
 import 'package:chopper/chopper.dart';
@@ -53,7 +31,6 @@ part 'api_service.chopper.dart';
 @ChopperApi()
 abstract class ApiService extends ChopperService{
 
-  //追加<S>
   @Get(path: '/top-headlines')
   Future<Response> getHeadLine({
     @Query('country') String country = "jp",
@@ -76,16 +53,15 @@ abstract class ApiService extends ChopperService{
       @Query('category') String category,
       @Query('apiKey') String apiKey = ApiService.API_KEY,
     });
-    //追加<E>
 }
 ```
-### ⑤flutterコマンドでコード生成
+### ③flutterコマンドでコード生成
 
 ```
 flutter packages pub run build_runner build
 ```
 
-### ⑥ファクトリメソッドの追加
+### ④ファクトリメソッドの追加
 
 ```
 import 'package:chopper/chopper.dart';
@@ -105,7 +81,36 @@ abstract class ApiService extends ChopperService{
       services: [
         _$ApiService()
       ],
-      converter: JsonConverter()
+      converter: JsonConverter(),
+      interceptors: [
+        (Request request) async {
+              print("""
+                =========HTTP Request logging=========
+                baseUrl: ${request.baseUrl}
+                url: ${request.url}
+                parameter: ${request.parameters}
+                method: ${request.method}
+                headers: ${request.headers}
+                body: ${request.body}
+                multipart: ${request.multipart}
+                parts: ${request.parts}
+                ======================================
+              """);
+
+          return request;
+        },
+        (Response response) async {
+          print("""
+                =========HTTP Response logging=========
+                url: ${response.base.request.url}
+                status: ${response.statusCode}
+                headers: ${response.headers}
+                body: ${response.body}
+                ======================================
+              """);
+              return response;
+        }
+      ]
     );
     return _$ApiService(client);
   }
@@ -136,7 +141,7 @@ abstract class ApiService extends ChopperService{
 }
 ```
 
-### ⑦レスポンス用のクラスの設定
+### ⑤レスポンス用のクラスの設定
 
 ```
 import 'package:json_annotation/json_annotation.dart';
@@ -169,11 +174,15 @@ class Article {
 }
 ```
 
-### ⑧レスポンス処理の追加
+### ⑥flutterコマンドでコード生成
 
 ```
+flutter packages pub run build_runner build
+```
 
+### ⑦レスポンス処理の追加
 
+```
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
@@ -224,8 +233,134 @@ class NewsRepository {
 }
 ```
 
+## Providerの導入
 
+### ①パッケージの追加
 
+```
+dependencies:
+  flutter:
+    sdk: flutter
 
+  provider: ^4.0.4
+```
 
+### ② ChangeNotifierの継承したクラスの生成
 
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/data/searchtype.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
+import 'package:flutter_chopper_demo/models/reposigory/news_repository.dart';
+
+class NewsListViewModel extends ChangeNotifier {
+
+  final NewsRepository _repository = NewsRepository();
+
+  SearchType _searchType = SearchType.CATEGORY;
+  SearchType get searchType => _searchType;
+
+  String _keyword = "";
+  String get keyword => _keyword;
+
+  String _category = "technology";
+  String get category => _category;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  List<Article> _artcles = List();
+  List<Article> get articles => _artcles;
+
+  Future<void> getNews({
+    @required SearchType searchType, String keyword, String category
+  }) async {}
+
+  @override
+  void dispose() {
+    super.dispose();
+    _repository.dispose();
+  }
+}
+```
+
+### ③ notifyListenersで変更を通知
+
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/data/searchtype.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
+import 'package:flutter_chopper_demo/models/reposigory/news_repository.dart';
+
+class NewsListViewModel extends ChangeNotifier {
+
+  final NewsRepository _repository = NewsRepository();
+
+  SearchType _searchType = SearchType.CATEGORY;
+  SearchType get searchType => _searchType;
+
+  String _keyword = "";
+  String get keyword => _keyword;
+
+  String _category = "technology";
+  String get category => _category;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  List<Article> _artcles = List();
+  List<Article> get articles => _artcles;
+
+  Future<void> getNews({
+    @required SearchType searchType, String keyword, String category
+  }) async {
+    _searchType = searchType;    
+    _keyword = keyword;
+    _category = category;
+
+    _isLoading = true;
+    notifyListeners();
+
+    _artcles = await _repository.getNews(serchType: _searchType, keyword: _keyword, category: _category);
+
+    for(Article a in _artcles) {
+     print(a.title);
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _repository.dispose();
+  }
+}
+```
+
+### ④ アプリのルートに、ChangeNotifierProviderを追加
+
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/viewmodels/newslist_viewmodel.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<NewsListViewModel>(create: (context) => NewsListViewModel()),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+```
+
+### ⑤ ChangeNotifierの継承したクラスのメソッドを操作
+
+```
+      final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
+      viewModel.getNews(searchType: SearchType.HEAD_LINE, );
+ ```
