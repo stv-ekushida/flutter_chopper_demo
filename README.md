@@ -364,3 +364,163 @@ void main() {
       final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
       viewModel.getNews(searchType: SearchType.HEAD_LINE, );
  ```
+
+## 画面に表示させる
+
+### ① ViewModel経由でAPIを呼ぶ
+
+```
+  _fetchNews() {
+    final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
+
+    if(!viewModel.isLoading && viewModel.articles.isEmpty) {
+      Future(() => viewModel.getNews(searchType: SearchType.HEAD_LINE));
+    }
+
+  }
+```
+### ②Consumerを利用して、データを取得する
+
+```
+class _MyHomePageState extends State<MyHomePage> {
+
+  @override
+  Widget build(BuildContext context) {
+    _fetchNews();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('News'),
+      ),
+      body: Container(
+        child: Consumer<NewsListViewModel>(
+          builder: (context, model, child) {
+            return model.isLoading ? Center(child: CircularProgressIndicator()) : 
+            ListView.builder(itemCount: model.articles.length,
+            itemBuilder: (context, int postion) => ArticleTile(
+              article: model.articles[postion],
+              onArticleClicked: (article) => _openArticleWebPage(article, context))
+            );
+          },
+        ),
+      )
+    );
+  }
+
+  _openArticleWebPage(article, BuildContext context) {
+
+  }
+}
+```
+
+```
+class ArticleTile extends StatelessWidget {
+
+  final Article article;
+  final ValueChanged onArticleClicked;
+
+  ArticleTile({this.article, this.onArticleClicked});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 8.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0)
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: InkWell(
+          onTap: () => onArticleClicked,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ImageFromUrl(imageUrl: article.urlToImage),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: ArticleTileDescription(article: article)
+              )
+            ],
+          ),
+
+        ),
+      ),
+
+    );
+  }
+}
+```
+
+### ③flutter_advanced_networkimageを使って、サーバーから画像を取得する
+
+```
+import 'package:flutter/material.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter_advanced_networkimage/transition.dart';
+
+class ImageFromUrl extends StatelessWidget {
+
+  final String imageUrl;
+  const ImageFromUrl({this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    
+    if(imageUrl == null) {
+      return const Icon(Icons.broken_image);
+    } else {
+      return TransitionToImage(
+        image: AdvancedNetworkImage(
+          imageUrl, useDiskCache: true
+        ),
+        placeholder: const Icon(Icons.broken_image),
+        fit: BoxFit.cover,
+      );
+    }
+  }
+}
+```
+
+### ④テキストのフォントテーマを利用する
+
+https://api.flutter.dev/flutter/material/TextTheme-class.html
+
+```
+
+import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
+
+class ArticleTileDescription extends StatelessWidget {
+
+  final Article article;
+  
+  const ArticleTileDescription({this.article});
+
+  @override
+  Widget build(BuildContext context) {
+
+    final textTheme = Theme.of(context).textTheme;
+
+    var displayDesc = '';
+    if(article.description != null) {
+      displayDesc = article.description;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(article.title, style: textTheme.subhead.copyWith(fontWeight : FontWeight.bold)),
+        Text(article.publishDate, style: textTheme.subhead.copyWith(fontStyle: FontStyle.italic)),
+        Text(displayDesc),
+      ]);
+  }
+}
+```
+
+
+
