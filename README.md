@@ -81,7 +81,36 @@ abstract class ApiService extends ChopperService{
       services: [
         _$ApiService()
       ],
-      converter: JsonConverter()
+      converter: JsonConverter(),
+      interceptors: [
+        (Request request) async {
+              print("""
+                =========HTTP Request logging=========
+                baseUrl: ${request.baseUrl}
+                url: ${request.url}
+                parameter: ${request.parameters}
+                method: ${request.method}
+                headers: ${request.headers}
+                body: ${request.body}
+                multipart: ${request.multipart}
+                parts: ${request.parts}
+                ======================================
+              """);
+
+          return request;
+        },
+        (Response response) async {
+          print("""
+                =========HTTP Response logging=========
+                url: ${response.base.request.url}
+                status: ${response.statusCode}
+                headers: ${response.headers}
+                body: ${response.body}
+                ======================================
+              """);
+              return response;
+        }
+      ]
     );
     return _$ApiService(client);
   }
