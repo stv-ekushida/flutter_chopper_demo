@@ -1,4 +1,3 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'news_model.g.dart';
@@ -17,11 +16,11 @@ class Article {
   final String title;
   final String description;
   final String url;
-  final String urlImage;
+  final String urlToImage;
   @JsonKey(name: "publishedAt") final String publishDate;
   final String content;
 
-  Article({this.title, this.description, this.url, this.urlImage, this.publishDate, this.content});
+  Article({this.title, this.description, this.url, this.urlToImage, this.publishDate, this.content});
 
   factory Article.fromJson(Map<String, dynamic> json) => _$ArticleFromJson(json);
   Map<String, dynamic> toJson() => _$ArticleToJson(this);

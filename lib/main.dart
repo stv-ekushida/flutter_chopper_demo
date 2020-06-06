@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
+import 'package:flutter_chopper_demo/models/news_model.dart';
 import 'package:flutter_chopper_demo/viewmodels/newslist_viewmodel.dart';
+import 'package:flutter_chopper_demo/views/compornents/article_tile.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -39,32 +41,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
+
+    if(!viewModel.isLoading && viewModel.articles.isEmpty) {
+      Future(() => viewModel.getNews(searchType: SearchType.HEAD_LINE));
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('AAA'),
+        title: Text('News'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:'),
-          ],
+      body: Container(
+        child: Consumer<NewsListViewModel>(
+          builder: (context, model, child) {
+            return model.isLoading ? CircularProgressIndicator() : 
+            ListView.builder(itemCount: model.articles.length,
+            itemBuilder: (context, int postion) => ArticleTile(
+              article: model.articles[postion],
+              onArticleClicked: (article) => _openArticleWebPage(article, context))
+            );
+          },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:() {
-          _fetch();
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      )
     );
   }
 
-  _fetch() {
-      final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
-      viewModel.getNews(searchType: SearchType.HEAD_LINE, );
+  _openArticleWebPage(article, BuildContext context) {
 
   }
 }

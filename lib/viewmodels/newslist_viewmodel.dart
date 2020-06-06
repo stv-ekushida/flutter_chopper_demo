@@ -40,7 +40,6 @@ class NewsListViewModel extends ChangeNotifier {
      print(a.title);
     }
 
- 
     _isLoading = false;
     notifyListeners();
   }
