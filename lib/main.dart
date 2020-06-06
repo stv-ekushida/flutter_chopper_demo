@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
-import 'package:flutter_chopper_demo/models/news_model.dart';
 import 'package:flutter_chopper_demo/viewmodels/newslist_viewmodel.dart';
 import 'package:flutter_chopper_demo/views/compornents/article_tile.dart';
 import 'package:provider/provider.dart';
@@ -41,12 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
-
-    if(!viewModel.isLoading && viewModel.articles.isEmpty) {
-      Future(() => viewModel.getNews(searchType: SearchType.HEAD_LINE));
-    }
+    _fetchNews();
 
     return Scaffold(
       appBar: AppBar(
@@ -55,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         child: Consumer<NewsListViewModel>(
           builder: (context, model, child) {
-            return model.isLoading ? CircularProgressIndicator() : 
+            return model.isLoading ? Center(child: CircularProgressIndicator()) : 
             ListView.builder(itemCount: model.articles.length,
             itemBuilder: (context, int postion) => ArticleTile(
               article: model.articles[postion],
@@ -65,6 +59,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       )
     );
+  }
+
+  _fetchNews() {
+    final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
+
+    if(!viewModel.isLoading && viewModel.articles.isEmpty) {
+      Future(() => viewModel.getNews(searchType: SearchType.HEAD_LINE));
+    }
+
   }
 
   _openArticleWebPage(article, BuildContext context) {

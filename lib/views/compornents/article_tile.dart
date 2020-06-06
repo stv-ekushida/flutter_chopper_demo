@@ -43,5 +43,4 @@ class ArticleTile extends StatelessWidget {
 
     );
   }
-
 }
