@@ -457,6 +457,11 @@ class ArticleTile extends StatelessWidget {
 ```
 
 ### ③flutter_advanced_networkimageを使って、サーバーから画像を取得する
+パッケージに、下記を追加
+
+```
+  flutter_advanced_networkimage: ^0.7.0
+```
 
 ```
 import 'package:flutter/material.dart';
