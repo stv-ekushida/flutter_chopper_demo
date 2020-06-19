@@ -1,5 +1,3 @@
-
-
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
@@ -7,16 +5,17 @@ import 'package:flutter_chopper_demo/models/networking/api_service.dart';
 import 'package:flutter_chopper_demo/models/news_model.dart';
 
 class NewsRepository {
+  final ApiService _apiService;
 
-  final ApiService _apiService = ApiService.create();
+  NewsRepository({apiService}) : _apiService = apiService;
 
-  Future<List<Article>> getNews({@required SearchType serchType, String keyword, String category}) async {
-
+  Future<List<Article>> getNews(
+      {@required SearchType serchType, String keyword, String category}) async {
     List<Article> result = List<Article>();
     Response response;
 
     try {
-      switch(serchType) {
+      switch (serchType) {
         case SearchType.CATEGORY:
           response = await _apiService.getCategoryNews();
           break;
@@ -28,7 +27,7 @@ class NewsRepository {
           break;
       }
 
-      if(response.isSuccessful) {
+      if (response.isSuccessful) {
         final responseBody = response.body;
         result = News.fromJson(responseBody).articles;
       } else {

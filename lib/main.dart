@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chopper_demo/viewmodels/newslist_viewmodel.dart';
+import 'package:flutter_chopper_demo/di/providers.dart';
 import 'package:flutter_chopper_demo/views/screens/myhome_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider<NewsListViewModel>(
-            create: (context) => NewsListViewModel()),
-      ],
+      providers: globalProviders,
       child: MyApp(),
     ),
   );
