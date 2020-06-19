@@ -1,3 +1,5 @@
+import 'package:flutter_chopper_demo/models/db/dao.dart';
+import 'package:flutter_chopper_demo/models/db/database.dart';
 import 'package:flutter_chopper_demo/models/networking/api_service.dart';
 import 'package:flutter_chopper_demo/models/reposigory/news_repository.dart';
 import 'package:flutter_chopper_demo/viewmodels/newslist_viewmodel.dart';
@@ -15,12 +17,19 @@ List<SingleChildWidget> independentModels = [
     create: (_) => ApiService.create(),
     dispose: (_, apiService) => apiService.dispose(),
   ),
+  Provider<AppDatabase>(
+    create: (_) => AppDatabase(),
+    dispose: (_, db) => db.close(),
+  ),
 ];
 
 List<SingleChildWidget> dependentModels = [
-  ProxyProvider<ApiService, NewsRepository>(
-    update: (_, apiService, repository) =>
-        NewsRepository(apiService: apiService),
+  ProxyProvider<AppDatabase, NewsDao>(
+    update: (_, db, dao) => NewsDao(db),
+  ),
+  ProxyProvider2<NewsDao, ApiService, NewsRepository>(
+    update: (_, dao, apiService, repository) =>
+        NewsRepository(dao: dao, apiService: apiService),
   )
 ];
 
