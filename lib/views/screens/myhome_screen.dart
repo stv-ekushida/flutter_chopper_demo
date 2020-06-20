@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _fetchNews() {
     final viewModel = Provider.of<NewsListViewModel>(context, listen: false);
 
-    if (viewModel.status != NetworkStatus.LOADIND &&
+    if (viewModel.status != NetworkStatus.LOADING &&
         viewModel.articles.isEmpty) {
       Future(() => viewModel.getNews(searchType: SearchType.HEAD_LINE));
     }
@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _afterNewsAPI(NewsListViewModel viewModel) {
     switch (viewModel.status) {
-      case NetworkStatus.LOADIND:
+      case NetworkStatus.LOADING:
         return Center(child: CircularProgressIndicator());
 
       case NetworkStatus.SESSION_TIMEOUT:
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
             .then((_) => openDialog(title: "警告", msg: "セッションタイムアウト"));
         continue newsList;
 
-      case NetworkStatus.FAIRIE:
+      case NetworkStatus.FAILURE:
         Future.delayed(Duration(milliseconds: 1000))
             .then((_) => openDialog(title: "警告", msg: "その他のエラー"));
         continue newsList;

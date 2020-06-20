@@ -15,21 +15,23 @@ class NewsRepository extends ChangeNotifier {
       : _apiService = apiService,
         _dao = dao;
 
-  List<Article> _artcles = List();
-  List<Article> get articles => _artcles;
+  List<Article> _articles = List();
+  List<Article> get articles => _articles;
 
   NetworkStatus _status = NetworkStatus.NONE;
   NetworkStatus get status => _status;
 
   Future<void> getNews(
-      {@required SearchType serchType, String keyword, String category}) async {
+      {@required SearchType searchType,
+      String keyword,
+      String category}) async {
     Response response;
 
-    _status = NetworkStatus.LOADIND;
+    _status = NetworkStatus.LOADING;
     notifyListeners();
 
     try {
-      switch (serchType) {
+      switch (searchType) {
         case SearchType.CATEGORY:
           response = await _apiService.getCategoryNews();
           break;
@@ -52,16 +54,16 @@ class NewsRepository extends ChangeNotifier {
 
         //エラーのときも、DBの値を表示しておく
         final articleEntities = await _dao.articleFromDB;
-        _artcles = articleEntities.toArticles(articleEntities);
+        _articles = articleEntities.toArticles(articleEntities);
 
         if (errorCode == 400) {
           _status = NetworkStatus.SESSION_TIMEOUT;
         } else {
-          _status = NetworkStatus.FAIRIE;
+          _status = NetworkStatus.FAILURE;
         }
       }
     } on Exception catch (_) {
-      _status = NetworkStatus.FAIRIE;
+      _status = NetworkStatus.FAILURE;
     } finally {
       notifyListeners();
     }
@@ -79,7 +81,7 @@ class NewsRepository extends ChangeNotifier {
     final articleEntities = await _dao
         .insertAndReadNewsFromDB(articles.toArticleEntities(articles));
 
-    _artcles = articleEntities.toArticles(articleEntities);
+    _articles = articleEntities.toArticles(articleEntities);
     _status = NetworkStatus.SUCCESS;
   }
 }

@@ -33,7 +33,7 @@ class NewsListViewModel extends ChangeNotifier {
     _category = category;
 
     await _repository.getNews(
-        serchType: _searchType, keyword: _keyword, category: _category);
+        searchType: _searchType, keyword: _keyword, category: _category);
   }
 
   @override
