@@ -9,7 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  chopper: ^2.0.0
+  chopper: ^3.0.3
   json_annotation: ^3.0.1
 
 dev_dependencies:
@@ -17,7 +17,7 @@ dev_dependencies:
     sdk: flutter
 
   build_runner: ^1.0.0
-  chopper_generator: ^2.0.0
+  chopper_generator: ^3.0.1
   json_serializable: ^3.3.0
 ```
 
