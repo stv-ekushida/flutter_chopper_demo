@@ -33,7 +33,7 @@ class _$ApiService extends ApiService {
       int pageSize = 30,
       String keyword,
       String apiKey = ApiService.API_KEY}) {
-    final $url = 'top-headlines';
+    final $url = '/top-headlines';
     final Map<String, dynamic> $params = {
       'country': country,
       'pageSize': pageSize,
@@ -49,7 +49,7 @@ class _$ApiService extends ApiService {
       int pageSize = 30,
       String category,
       String apiKey = ApiService.API_KEY}) {
-    final $url = 'top-headlines';
+    final $url = '/top-headlines';
     final Map<String, dynamic> $params = {
       'country': country,
       'pageSize': pageSize,

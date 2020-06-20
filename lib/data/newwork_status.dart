@@ -1,0 +1,1 @@
+enum NetworkStatus { NONE, LOADIND, SUCCESS, FAIRIE, SESSION_TIMEOUT }

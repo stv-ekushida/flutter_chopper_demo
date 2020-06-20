@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:chopper/chopper.dart';
 
 part 'api_service.chopper.dart';
@@ -12,6 +13,7 @@ abstract class ApiService extends ChopperService {
         baseUrl: BASE_URL,
         services: [_$ApiService()],
         converter: JsonConverter(),
+        errorConverter: JsonConverter(),
         interceptors: [
           (Request request) async {
             print("""
@@ -38,6 +40,7 @@ abstract class ApiService extends ChopperService {
                 body: ${response.body}
                 ======================================
               """);
+
             return response;
           }
         ]);
@@ -51,7 +54,7 @@ abstract class ApiService extends ChopperService {
     @Query('apiKey') String apiKey = ApiService.API_KEY,
   });
 
-  @Get(path: 'top-headlines')
+  @Get(path: '/top-headlines')
   Future<Response> getKeyword({
     @Query("country") String country = "jp",
     @Query('pageSize') int pageSize = 30,
@@ -59,7 +62,7 @@ abstract class ApiService extends ChopperService {
     @Query('apiKey') String apiKey = ApiService.API_KEY,
   });
 
-  @Get(path: 'top-headlines')
+  @Get(path: '/top-headlines')
   Future<Response> getCategoryNews({
     @Query("country") String country = "jp",
     @Query('pageSize') int pageSize = 30,

@@ -27,16 +27,19 @@ List<SingleChildWidget> dependentModels = [
   ProxyProvider<AppDatabase, NewsDao>(
     update: (_, db, dao) => NewsDao(db),
   ),
-  ProxyProvider2<NewsDao, ApiService, NewsRepository>(
-    update: (_, dao, apiService, repository) =>
-        NewsRepository(dao: dao, apiService: apiService),
+  ChangeNotifierProvider<NewsRepository>(
+    create: (context) => NewsRepository(
+        dao: Provider.of<NewsDao>(context, listen: false),
+        apiService: Provider.of<ApiService>(context, listen: false)),
   )
 ];
 
 List<SingleChildWidget> viewModels = [
-  ChangeNotifierProvider<NewsListViewModel>(
+  ChangeNotifierProxyProvider<NewsRepository, NewsListViewModel>(
     create: (context) => NewsListViewModel(
       repository: Provider.of<NewsRepository>(context, listen: false),
     ),
+    update: (context, repository, viewModel) =>
+        viewModel..onRepositoryUpdated(repository),
   )
 ];

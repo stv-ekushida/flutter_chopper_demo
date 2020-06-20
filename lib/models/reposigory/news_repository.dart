@@ -1,13 +1,13 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chopper_demo/data/newwork_status.dart';
 import 'package:flutter_chopper_demo/data/searchtype.dart';
 import 'package:flutter_chopper_demo/models/db/dao.dart';
-import 'package:flutter_chopper_demo/models/db/database.dart';
 import 'package:flutter_chopper_demo/models/networking/api_service.dart';
 import 'package:flutter_chopper_demo/models/news_model.dart';
 import 'package:flutter_chopper_demo/utils/extensions.dart';
 
-class NewsRepository {
+class NewsRepository extends ChangeNotifier {
   final ApiService _apiService;
   final NewsDao _dao;
 
@@ -15,10 +15,18 @@ class NewsRepository {
       : _apiService = apiService,
         _dao = dao;
 
-  Future<List<Article>> getNews(
+  List<Article> _artcles = List();
+  List<Article> get articles => _artcles;
+
+  NetworkStatus _status = NetworkStatus.NONE;
+  NetworkStatus get status => _status;
+
+  Future<void> getNews(
       {@required SearchType serchType, String keyword, String category}) async {
-    List<Article> result = List<Article>();
     Response response;
+
+    _status = NetworkStatus.LOADIND;
+    notifyListeners();
 
     try {
       switch (serchType) {
@@ -35,27 +43,43 @@ class NewsRepository {
 
       if (response.isSuccessful) {
         final responseBody = response.body;
-        result = await insertAndReadFromDB(responseBody);
+        await insertAndReadFromDB(responseBody);
       } else {
         final errorCode = response.statusCode;
+        final error = response.error;
         print("response is not successful : $errorCode");
+        print("error info. $error");
+
+        //エラーのときも、DBの値を表示しておく
+        final articleEntities = await _dao.articleFromDB;
+        _artcles = articleEntities.toArticles(articleEntities);
+
+        if (errorCode == 400) {
+          _status = NetworkStatus.SESSION_TIMEOUT;
+        } else {
+          _status = NetworkStatus.FAIRIE;
+        }
       }
-    } on Exception catch (error) {
-      print(error);
+    } on Exception catch (_) {
+      _status = NetworkStatus.FAIRIE;
+    } finally {
+      notifyListeners();
     }
-    return result;
   }
 
+  @override
   void dispose() {
+    super.dispose();
     _apiService.dispose();
   }
 
-  Future<List<Article>> insertAndReadFromDB(responseBody) async {
+  Future<void> insertAndReadFromDB(responseBody) async {
     final articles = News.fromJson(responseBody).articles;
 
     final articleEntities = await _dao
         .insertAndReadNewsFromDB(articles.toArticleEntities(articles));
 
-    return articleEntities.toArticles(articleEntities);
+    _artcles = articleEntities.toArticles(articleEntities);
+    _status = NetworkStatus.SUCCESS;
   }
 }
